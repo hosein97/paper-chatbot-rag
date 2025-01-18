@@ -1,6 +1,6 @@
 from langchain_chroma import Chroma
 import os
-import uuid
+from uuid import uuid4
 from fastapi import UploadFile
 from langchain_openai import OpenAIEmbeddings
 from langchain.text_splitter import RecursiveCharacterTextSplitter
@@ -10,14 +10,16 @@ from langchain_community.document_loaders import PyPDFLoader
 
 
 # Initialize Vector Database
-vector_store = InMemoryVectorStore(persist_directory=VECTOR_DB_PATH, embedding_function=OpenAIEmbeddings(api_key=OPENAI_API_KEY))
+vector_store = Chroma(collection_name="file_collection",
+                    persist_directory=VECTOR_DB_PATH,
+                    embedding_function=OpenAIEmbeddings(api_key=OPENAI_API_KEY))
 
 async def process_and_store_file(file: UploadFile) -> str:
     """r
     Process the uploaded PDF, clear the vector database, and store the new file's embeddings.
     """
     # Generate a unique ID for the file
-    file_id = str(uuid.uuid4())
+    file_id = str(uuid4())
 
     # Save the uploaded file to a temporary location
     temp_file_path = f"/tmp/{file.filename}"
@@ -33,12 +35,11 @@ async def process_and_store_file(file: UploadFile) -> str:
     docs = text_splitter.split_documents(documents)
 
     # Clear the vector database before adding new embeddings
-    vector_store.delete_collection()
+    # vector_store.delete_collection()
 
-    vector_store.add_documents(docs)
+    uuids = [str(uuid4()) for _ in range(len(docs))]
+    vector_store.add_documents(documents=docs, ids=uuids)
 
-    # Persist the vector store to disk
-    vector_store.persist()
 
     # Cleanup the temporary file
     os.remove(temp_file_path)
@@ -49,7 +50,16 @@ async def process_and_store_file(file: UploadFile) -> str:
 # import os
 # from langchain_core.vectorstores import InMemoryVectorStore
 # VECTOR_DB_PATH = os.getenv("VECTOR_DB_PATH", "./app/vector_db")  # Path to store the vector DB
-# vector_store = Chroma(persist_directory=VECTOR_DB_PATH, embedding_function=OpenAIEmbeddings())
+# vector_store = Chroma(collection_name="file_collection",
+#                       persist_directory=VECTOR_DB_PATH,
+#                     embedding_function=OpenAIEmbeddings())
+
+# vector_store.delete_collection()
+
+# uuids = [str(uuid4()) for _ in range(len(all_splits))]
+# vector_store.add_documents(documents=all_splits, ids=uuids)
+
+
 
 # from langchain.document_loaders import PyPDFLoader
 

@@ -1,5 +1,4 @@
 from app.config.settings import VECTOR_DB_PATH
-# from langchain_core.vectorstores import InMemoryVectorStore
 from langchain_chroma import Chroma
 
 from langgraph.graph import START, StateGraph
@@ -33,16 +32,13 @@ llm = ChatOpenAI(model="gpt-4o-mini")
 
 memory = MemorySaver()
 
-def clear_memory():
-    """Clear the memory."""
-    memory.clear()
 
 def process_question(file_id: str, question: str) -> str:
     """
     Process a user's question and maintain chat history using MemorySaver.
     """
     # Load the vector database
-    vector_store = InMemoryVectorStore()
+    vector_store = Chroma(persist_directory=VECTOR_DB_PATH)
 
     graph_builder = StateGraph(MessagesState)
 

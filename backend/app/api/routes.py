@@ -1,5 +1,5 @@
 from fastapi import APIRouter, UploadFile, File, HTTPException
-from app.services.langchain_service import process_question, clear_memory
+from app.services.langchain_service import process_question
 from app.models.chat import ChatRequest, ChatResponse
 
 router = APIRouter()
@@ -16,7 +16,6 @@ async def upload_file(file: UploadFile = File(...)):
     
     try:
         file_id = await process_and_store_file(file)
-        clear_memory()
         return {"file_id": file_id, "message": "File uploaded and stored successfully"}
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error processing file: {str(e)}")
@@ -28,8 +27,3 @@ async def chat_with_paper(request: ChatRequest):
         raise HTTPException(status_code=404, detail="Unable to generate an answer")
     return {"answer": answer}
 
-@router.post("/new_chat", summary="Start a new chat")
-async def start_new_chat():
-    """Clear the chat history for a new chat session."""
-    clear_memory()  # Reset memory for a new chat
-    return {"message": "New chat started, chat history cleared."}
