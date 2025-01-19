@@ -64,3 +64,46 @@ out/
 *.bak
 *.tmp
 *.temp
+
+# Ignore Python cache files
+__pycache__/
+*.pyc
+*.pyo
+
+# Ignore virtual environments
+venv/
+env/
+
+# Ignore system files
+.DS_Store
+Thumbs.db
+
+# Ignore Gradio temporary files
+.gradio/
+
+# Ignore local settings/config files
+app/config/settings.py
+
+# Ignore PDF files (if they shouldn't be in the repo)
+*.pdf
+
+# Ignore vector database directory
+app/vector_db/
+
+# Ignore Docker Compose files (if they are specific to your local setup)
+docker-compose.yml
+
+# Ignore log files
+*.log
+
+# Ignore temporary editor/project files
+*.swp
+*.swo
+.idea/
+.vscode/
+*.iml
+
+# Ignore environment-related files
+.env
+.env.*
+
