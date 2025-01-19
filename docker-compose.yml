@@ -1,0 +1,28 @@
+version: '3.8'
+
+services:
+  # Frontend service (Gradio)
+  gradio:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: gradio_frontend
+    ports:
+      - "7860:7860"  # Gradio port
+    environment:
+      - GRADIO_SERVER_NAME=0.0.0.0
+    depends_on:
+      - backend  # Wait for the backend service
+
+  # Backend service (FastAPI)
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: backend_service
+    ports:
+      - "8000:8000"  # FastAPI port
+    env_file:
+      - ./backend/.env  # Specify the location of the backend's .env file
+
+
