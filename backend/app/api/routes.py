@@ -11,18 +11,19 @@ router = APIRouter()
 
 @router.post("/upload", summary="Upload a PDF file")
 async def upload_file(file: UploadFile = File(...)):
-    if file.content_type != "application/pdf":
-        raise HTTPException(status_code=400, detail="Only PDF files are supported")
-    
+    print(file)
+    # Validate file extension based on filename
+    if not file.filename.lower().endswith(".pdf"):
+        raise HTTPException(status_code=400, detail="Only PDF files are supported")    
     try:
-        file_id = await process_and_store_file(file)
-        return {"file_id": file_id, "message": "File uploaded and stored successfully"}
+        filename = await process_and_store_file(file)
+        return {"filename": filename, "message": "File uploaded and stored successfully"}
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error processing file: {str(e)}")
 
 @router.post("/chat", response_model=ChatResponse, summary="Chat with uploaded PDF")
 async def chat_with_paper(request: ChatRequest):
-    answer = process_question(request.file_id, request.question)
+    answer = process_question(request.filename, request.question)
     if not answer:
         raise HTTPException(status_code=404, detail="Unable to generate an answer")
     return {"answer": answer}

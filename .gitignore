@@ -107,3 +107,9 @@ docker-compose.yml
 .env
 .env.*
 
+
+# Ignore vector database directory
+app/vector_db/
+vector_app/
+backend/app/vector_db/
+

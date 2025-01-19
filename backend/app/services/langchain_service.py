@@ -1,44 +1,31 @@
-from app.config.settings import VECTOR_DB_PATH
+from app.config.settings import VECTOR_DB_PATH, OPENAI_API_KEY
 from langchain_chroma import Chroma
-
-from langgraph.graph import START, StateGraph
 from langchain_openai import ChatOpenAI
-
-from langgraph.graph import MessagesState, StateGraph
-from langchain_core.tools import tool
-
-
 from langchain_core.messages import SystemMessage
 from langgraph.prebuilt import ToolNode
-
-    
 from langgraph.graph import END
 from langgraph.prebuilt import ToolNode, tools_condition
-
-
 from langgraph.graph import MessagesState, StateGraph
 from langchain_core.tools import tool
-from langchain_core.messages import SystemMessage
-from langgraph.prebuilt import ToolNode
-
-
-from langgraph.graph import END
-from langgraph.prebuilt import ToolNode, tools_condition
-
-
 from langgraph.checkpoint.memory import MemorySaver
+from langchain_openai import OpenAIEmbeddings
+
+
 
 llm = ChatOpenAI(model="gpt-4o-mini")
 
 memory = MemorySaver()
 
 
-def process_question(file_id: str, question: str) -> str:
+def process_question(filename: str, question: str) -> str:
     """
     Process a user's question and maintain chat history using MemorySaver.
     """
     # Load the vector database
-    vector_store = Chroma(persist_directory=VECTOR_DB_PATH)
+    vector_store = Chroma(persist_directory=VECTOR_DB_PATH,
+                           collection_name="file_collection",
+                           embedding_function=OpenAIEmbeddings(api_key=OPENAI_API_KEY)
+                           )
 
     graph_builder = StateGraph(MessagesState)
 
@@ -46,6 +33,7 @@ def process_question(file_id: str, question: str) -> str:
     def retrieve(query: str):
         """Retrieve information of the paper."""
         retrieved_docs = vector_store.similarity_search(query, k=2)
+        print(retrieved_docs[0])
         serialized = "\n\n".join(
             (f"Source: {doc.metadata}\n" f"Content: {doc.page_content}")
             for doc in retrieved_docs
@@ -105,7 +93,7 @@ def process_question(file_id: str, question: str) -> str:
     graph = graph_builder.compile(checkpointer=memory)
 
     # Use a unique thread ID for the session
-    thread_id = file_id  # Associate thread ID with the file ID
+    thread_id = filename  # Associate thread ID with the file ID
     config = {"configurable": {"thread_id": thread_id}}
 
     # Process the question
