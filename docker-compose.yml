@@ -10,7 +10,8 @@ services:
     ports:
       - "7860:7860"  # Gradio port
     environment:
-      - GRADIO_SERVER_NAME=0.0.0.0
+      - BACKEND_BASE_URL=http://backend:8000
+
     depends_on:
       - backend  # Wait for the backend service
 

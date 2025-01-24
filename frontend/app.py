@@ -1,9 +1,9 @@
 import gradio as gr
 import requests
 from typing import List, Tuple
-
+import os
 # Base URL of your FastAPI app
-BASE_URL = "http://127.0.0.1:8000"
+BASE_URL = os.getenv("BACKEND_BASE_URL", "http://127.0.0.1:8000")  # Default to localhost if not provided
 
 # Global variables
 class ChatState:
