@@ -1,11 +1,10 @@
 from fastapi import APIRouter, UploadFile, File, HTTPException
-from app.services.langchain_service import process_question
 from app.models.chat import ChatRequest, ChatResponse
 
 router = APIRouter()
 
 from fastapi import APIRouter, UploadFile, File, HTTPException
-from app.services.file_manager import process_and_store_file
+from app.services.services import process_and_store_file, process_question
 
 router = APIRouter()
 
