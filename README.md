@@ -9,9 +9,12 @@ A simple application that allows users to upload a paper and chat with the paper
 2. Clone the repository:  
 ```bash  
 git clone [REPO_URL]  
-cd paper-chatbot-rag  
+```  
 3. Run the application using Docker Compose:
-`docker-compose up -d`
+```bash
+docker-compose up -d
+cd paper-chatbot-rag
+```
 
 Access the frontend at http://127.0.0.1:7860.
 
